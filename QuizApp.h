@@ -304,33 +304,6 @@ public:
     void saveChanges(User &user);
 };
 
-class CreateQuizController
-{
-public:
-    explicit CreateQuizController(StorageService &storage);
-
-    // Start a brand-new quiz for this user with the given title
-    void startNewQuiz(User &user, const std::string &title);
-
-    // Mutating the quiz being built
-    void addQuestion(const Question &q);
-    void removeQuestion(int idx);
-    void updateQuestion(int idx, const Question &q);
-
-    // Commit the quiz to the user + storage
-    void saveAndFinish();
-
-    // Helpers
-    bool hasActiveQuiz() const;
-    Quiz* getQuiz();
-
-private:
-    StorageService &m_storage;
-    User *m_user{ nullptr };
-    std::optional<Quiz> m_workingQuiz;
-};
-
-
 class PlayQuizController
 {
 public:

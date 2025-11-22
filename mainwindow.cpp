@@ -1,147 +1,122 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "quizlistwindow.h"
 
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 #include <QMessageBox>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    // simple in-memory storage; path/version don't really matter yet
     m_storage("./data", "1.0"),
     m_auth(m_storage),
-    m_mainMenuController(m_storage),
-    m_createQuizController(m_storage)
-
+    m_mainMenuController(m_storage)
 {
-    ui->setupUi(this);
+    stacked = new QStackedWidget(this);
+    setCentralWidget(stacked);
 
-    m_quizListWindow = new QuizListWindow(nullptr);
+    // --- Login Page ---
+    loginPage = new QWidget();
+    auto *loginLayout = new QVBoxLayout(loginPage);
 
-    // start logged out: show loginPage, hide menuPage
-    ui->loginPage->show();
+    username = new QLineEdit();
+    password = new QLineEdit();
+    password->setEchoMode(QLineEdit::Password);
 
-    // Connect buttons to our slots
-    connect(ui->loginButton, &QPushButton::clicked,
+    auto *loginBtn = new QPushButton("Login");
+    auto *createBtn = new QPushButton("Create Account");
+    status = new QLabel();
+
+    loginLayout->addWidget(new QLabel("Username:"));
+    loginLayout->addWidget(username);
+    loginLayout->addWidget(new QLabel("Password:"));
+    loginLayout->addWidget(password);
+    loginLayout->addWidget(loginBtn);
+    loginLayout->addWidget(createBtn);
+    loginLayout->addWidget(status);
+
+    // --- Quiz List Page ---
+    quizListPage = new QuizListWindow();
+
+    // add to stacked widget
+    stacked->addWidget(loginPage);      // index 0
+    stacked->addWidget(quizListPage);   // index 1
+    stacked->setCurrentIndex(0);
+
+    // connect signals
+    connect(loginBtn, &QPushButton::clicked,
             this, &MainWindow::handleLogin);
 
-    connect(ui->createAccountButton, &QPushButton::clicked,
-            this, &MainWindow::handleCreateAccount);
+    connect(createBtn, &QPushButton::clicked,
+            this, &MainWindow::handleCreate);
 
-    connect(m_quizListWindow, &QuizListWindow::createQuizRequested,
+    connect(quizListPage, &QuizListWindow::createQuizRequested,
             this, &MainWindow::handleCreateQuiz);
 
-    connect(m_quizListWindow, &QuizListWindow::playQuizRequested,
+    connect(quizListPage, &QuizListWindow::playQuizRequested,
             this, &MainWindow::handlePlayQuiz);
 
-    connect(m_quizListWindow, &QuizListWindow::editQuizRequested,
+    connect(quizListPage, &QuizListWindow::editQuizRequested,
             this, &MainWindow::handleEditQuiz);
-
-
-    ui->statusLabel->setText("Not logged in");
-
-
 }
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-
 
 void MainWindow::handleLogin()
 {
-    const std::string username = ui->usernameEdit->text().toStdString();
-    const std::string password = ui->passwordEdit->text().toStdString();
+    auto user = m_auth.login(
+        username->text().toStdString(),
+        password->text().toStdString());
 
-    auto user = m_auth.login(username, password);
-    if (user)
+    if (!user)
     {
-        // store a copy of the logged-in user
-        m_currentUser = *user;
-
-//        ui->statusLabel->setText(
-//            QString("Logged in as %1").arg(QString::fromStdString(username)));
-
-        //setting up the current user as a parameter to show the users list
-        m_quizListWindow->setUser(*m_currentUser);
-        m_quizListWindow->show();
-
-        // This prints info from your backend to the console for now
-        m_mainMenuController.showMenu(*m_currentUser);
+        status->setText("Login failed.");
+        return;
     }
-    else
-    {
-        ui->statusLabel->setText("Login failed");
-        QMessageBox::warning(this, tr("Login failed"),
-                             tr("Invalid username or password."));
-    }
+
+    m_currentUser = *user;
+    quizListPage->setUser(*m_currentUser);
+
+    stacked->setCurrentIndex(1);
+    m_mainMenuController.showMenu(*m_currentUser);
 }
 
-void MainWindow::handleCreateAccount()
+void MainWindow::handleCreate()
 {
-    const std::string username = ui->usernameEdit->text().toStdString();
-    const std::string password = ui->passwordEdit->text().toStdString();
+    std::string u = username->text().toStdString();
+    std::string p = password->text().toStdString();
 
-    if (username.empty() || password.empty())
+    if (u.empty() || p.empty())
     {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("Username and password cannot be empty."));
+        status->setText("Invalid.");
         return;
     }
 
-    if (m_auth.userExists(username))
+    if (m_auth.userExists(u))
     {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("User already exists."));
+        status->setText("User exists.");
         return;
     }
 
-    User u = m_auth.createAccount(username, password);
-    m_currentUser = u;
+    m_currentUser = m_auth.createAccount(u, p);
+    quizListPage->setUser(*m_currentUser);
 
-    //ui->statusLabel->setText(
-        //QString("Account created and logged in as %1")
-           // .arg(QString::fromStdString(username)));
-
-    m_quizListWindow->setUser(*m_currentUser);
-    m_quizListWindow->show();
-
+    stacked->setCurrentIndex(1);
     m_mainMenuController.showMenu(*m_currentUser);
 }
 
 void MainWindow::handleCreateQuiz()
 {
-    QMessageBox::information(this, "Create Quiz", "TODO: open quiz editor window.");
-    if(!m_currentUser) return;
-
-    // For now you could prompt for a title or use a placeholder
-    std::string title = "New Quiz";
-    m_createQuizController.startNewQuiz(*m_currentUser, title);
-
-    // later: open your CreateQuiz UI and use m_createQuizController
-
+    QMessageBox::information(this, "TODO",
+                             "Create quiz editor not implemented.");
 }
-
 
 void MainWindow::handlePlayQuiz(const Quiz &quiz)
 {
-    // For now just prove the wiring works
-    qDebug() << "MainWindow: play quiz"
+    qDebug() << "Play quiz:"
              << QString::fromStdString(quiz.getTitle());
-
-    // Later:
-    // m_playQuizController.startQuiz(*m_currentUser, quiz);
-    // show PlayQuiz UI
 }
 
 void MainWindow::handleEditQuiz(const Quiz &quiz)
 {
-    qDebug() << "MainWindow: edit quiz"
+    qDebug() << "Edit quiz:"
              << QString::fromStdString(quiz.getTitle());
-
-    // Later:
-    // m_editQuizController.editQuiz(*m_currentUser, quiz);
-    // show EditQuiz UI
 }
