@@ -1,10 +1,11 @@
 #pragma once
-#include <QWidget>
 #include <QListWidget>
 #include <QStringList>
+#include <QWidget>
 #include "QuizApp.h"
 
-class QuizListWindow : public QWidget {
+class QuizListWindow : public QWidget
+{
     Q_OBJECT
 public:
     QuizListWindow(QWidget *parent = nullptr);
@@ -16,12 +17,8 @@ signals:
     void playQuizRequested(const Quiz &quiz);
     void editQuizRequested(const Quiz &quiz);
 
-
-
 private:
     QListWidget *listWidget;
-    const User  *m_user     = nullptr;   // we don't own the user
+    const User *m_user = nullptr; // we don't own the user
     void populateList();
 };
-
-

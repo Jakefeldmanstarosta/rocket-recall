@@ -1,15 +1,16 @@
 #pragma once
 
+#include <QLabel>
+#include <QLineEdit>
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QLineEdit>
-#include <QLabel>
 #include <optional>
 
 #include "QuizApp.h"
 #include "quizlistwindow.h"
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);

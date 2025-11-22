@@ -1,10 +1,11 @@
 #pragma once
-#include <QWidget>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QWidget>
 
-class QuizRowWidget : public QWidget {
+class QuizRowWidget : public QWidget
+{
     Q_OBJECT
 public:
     QuizRowWidget(const QString &quizName, QWidget *parent = nullptr)
@@ -21,11 +22,13 @@ public:
         layout->addWidget(playButton);
         layout->addWidget(editButton);
 
-        connect(playButton, &QPushButton::clicked,
-                this, [this]() { emit playQuiz(nameLabel->text()); });
+        connect(playButton, &QPushButton::clicked, this, [this]() {
+            emit playQuiz(nameLabel->text());
+        });
 
-        connect(editButton, &QPushButton::clicked,
-                this, [this]() { emit editQuiz(nameLabel->text()); });
+        connect(editButton, &QPushButton::clicked, this, [this]() {
+            emit editQuiz(nameLabel->text());
+        });
     }
 
 signals:

@@ -1,6 +1,6 @@
 #include "quizlistwindow.h"
-#include "quizrowwidget.h"
 #include "mainwindow.h"
+#include "quizrowwidget.h"
 
 #include <QVBoxLayout>
 
@@ -12,31 +12,30 @@ QuizListWindow::QuizListWindow(QWidget *parent)
     listWidget = new QListWidget(this);
     layout->addWidget(listWidget);
 
-//    // Example quiz list
-//    QStringList quizzes = { "Algebra Basics", "C++ Memory", "Geography Flags", "Physics Forces" };
+    //    // Example quiz list
+    //    QStringList quizzes = { "Algebra Basics", "C++ Memory", "Geography Flags", "Physics Forces" };
 
-//    //what I want
-//    //QStringList quizzes = parent->getQuizzes();
+    //    //what I want
+    //    //QStringList quizzes = parent->getQuizzes();
 
+    //    for (const QString &quizName : quizzes) {
+    //        QListWidgetItem *item = new QListWidgetItem(listWidget);
+    //        item->setSizeHint(QSize(300, 50));
 
-//    for (const QString &quizName : quizzes) {
-//        QListWidgetItem *item = new QListWidgetItem(listWidget);
-//        item->setSizeHint(QSize(300, 50));
+    //        QuizRowWidget *row = new QuizRowWidget(quizName);
+    //        listWidget->setItemWidget(item, row);
 
-//        QuizRowWidget *row = new QuizRowWidget(quizName);
-//        listWidget->setItemWidget(item, row);
+    //        // Connect signals
+    //        connect(row, &QuizRowWidget::playQuiz,
+    //                this, [](const QString &name) {
+    //                    qDebug() << "Play quiz:" << name;
+    //                });
 
-//        // Connect signals
-//        connect(row, &QuizRowWidget::playQuiz,
-//                this, [](const QString &name) {
-//                    qDebug() << "Play quiz:" << name;
-//                });
-
-//        connect(row, &QuizRowWidget::editQuiz,
-//                this, [](const QString &name) {
-//                    qDebug() << "Edit quiz:" << name;
-//                });
-//    }
+    //        connect(row, &QuizRowWidget::editQuiz,
+    //                this, [](const QString &name) {
+    //                    qDebug() << "Edit quiz:" << name;
+    //                });
+    //    }
 }
 
 // Called by MainWindow after login / create account
@@ -50,7 +49,8 @@ void QuizListWindow::populateList()
 {
     listWidget->clear();
 
-    if (!m_user) return;
+    if (!m_user)
+        return;
 
     const auto &quizzes = m_user->getQuizzes();
 
@@ -58,7 +58,6 @@ void QuizListWindow::populateList()
     // 1. Add existing quiz rows
     //
     for (const Quiz &quiz : quizzes) {
-
         QString quizName = QString::fromStdString(quiz.getTitle());
 
         QListWidgetItem *item = new QListWidgetItem(listWidget);
@@ -68,17 +67,15 @@ void QuizListWindow::populateList()
         listWidget->setItemWidget(item, row);
 
         // Connect signals
-        connect(row, &QuizRowWidget::playQuiz,
-                this, [this,&quiz](const QString &name) {
-                    qDebug() << "Play quiz:" << name;
-                    emit playQuizRequested(quiz);
-                });
+        connect(row, &QuizRowWidget::playQuiz, this, [this, &quiz](const QString &name) {
+            qDebug() << "Play quiz:" << name;
+            emit playQuizRequested(quiz);
+        });
 
-        connect(row, &QuizRowWidget::editQuiz,
-                this, [this,quiz](const QString &name) {
-                    qDebug() << "Edit quiz:" << name;
-                    emit editQuizRequested(quiz);
-                });
+        connect(row, &QuizRowWidget::editQuiz, this, [this, quiz](const QString &name) {
+            qDebug() << "Edit quiz:" << name;
+            emit editQuizRequested(quiz);
+        });
     }
 
     //
@@ -91,7 +88,7 @@ void QuizListWindow::populateList()
         // A container widget to hold the button
         QWidget *container = new QWidget();
         QHBoxLayout *layout = new QHBoxLayout(container);
-        layout->setContentsMargins(0,0,0,0);
+        layout->setContentsMargins(0, 0, 0, 0);
 
         QPushButton *btn = new QPushButton("➕  Create New Quiz");
         btn->setStyleSheet("font-weight: bold; padding: 8px;");

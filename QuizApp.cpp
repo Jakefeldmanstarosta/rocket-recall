@@ -7,25 +7,42 @@
 // -------------------- Choice -------------------- //
 
 Choice::Choice(const std::string &label, const std::string &text)
-    : m_label(label), m_text(text)
+    : m_label(label)
+    , m_text(text)
+{}
+
+const std::string &Choice::getLabel() const
 {
+    return m_label;
+}
+const std::string &Choice::getText() const
+{
+    return m_text;
 }
 
-const std::string &Choice::getLabel() const { return m_label; }
-const std::string &Choice::getText() const { return m_text; }
-
-void Choice::setLabel(const std::string &label) { m_label = label; }
-void Choice::setText(const std::string &text) { m_text = text; }
+void Choice::setLabel(const std::string &label)
+{
+    m_label = label;
+}
+void Choice::setText(const std::string &text)
+{
+    m_text = text;
+}
 
 // -------------------- Question -------------------- //
 
 Question::Question(const std::string &prompt)
     : m_prompt(prompt)
-{
-}
+{}
 
-const std::string &Question::getPrompt() const { return m_prompt; }
-void Question::setPrompt(const std::string &prompt) { m_prompt = prompt; }
+const std::string &Question::getPrompt() const
+{
+    return m_prompt;
+}
+void Question::setPrompt(const std::string &prompt)
+{
+    m_prompt = prompt;
+}
 
 void Question::addChoice(const Choice &choice)
 {
@@ -86,16 +103,24 @@ Attempt::Attempt(const DateTime &timestamp,
                  int score,
                  Duration elapsed,
                  const std::vector<int> &wrongQuestionIds)
-    : m_timestamp(timestamp),
-    m_score(score),
-    m_elapsed(elapsed),
-    m_wrongQuestionIds(wrongQuestionIds)
-{
-}
+    : m_timestamp(timestamp)
+    , m_score(score)
+    , m_elapsed(elapsed)
+    , m_wrongQuestionIds(wrongQuestionIds)
+{}
 
-const DateTime &Attempt::getTimestamp() const { return m_timestamp; }
-int Attempt::getScore() const { return m_score; }
-Duration Attempt::getElapsed() const { return m_elapsed; }
+const DateTime &Attempt::getTimestamp() const
+{
+    return m_timestamp;
+}
+int Attempt::getScore() const
+{
+    return m_score;
+}
+Duration Attempt::getElapsed() const
+{
+    return m_elapsed;
+}
 const std::vector<int> &Attempt::getWrongQuestionIds() const
 {
     return m_wrongQuestionIds;
@@ -113,21 +138,42 @@ void QuizStats::recordAttempt(const Attempt &a)
         m_bestTime = a.getElapsed();
 }
 
-int QuizStats::getAttempts() const { return m_attempts; }
-int QuizStats::topScore() const { return m_bestScore; }
-Duration QuizStats::topSpeed() const { return m_bestTime; }
-const std::vector<Attempt> &QuizStats::getHistory() const { return m_history; }
+int QuizStats::getAttempts() const
+{
+    return m_attempts;
+}
+int QuizStats::topScore() const
+{
+    return m_bestScore;
+}
+Duration QuizStats::topSpeed() const
+{
+    return m_bestTime;
+}
+const std::vector<Attempt> &QuizStats::getHistory() const
+{
+    return m_history;
+}
 
 // -------------------- Quiz -------------------- //
 
 Quiz::Quiz(int id, const std::string &title)
-    : m_id(id), m_title(title)
-{
-}
+    : m_id(id)
+    , m_title(title)
+{}
 
-int Quiz::getId() const { return m_id; }
-const std::string &Quiz::getTitle() const { return m_title; }
-void Quiz::setTitle(const std::string &title) { m_title = title; }
+int Quiz::getId() const
+{
+    return m_id;
+}
+const std::string &Quiz::getTitle() const
+{
+    return m_title;
+}
+void Quiz::setTitle(const std::string &title)
+{
+    m_title = title;
+}
 
 void Quiz::addQuestion(const Question &q)
 {
@@ -173,9 +219,9 @@ std::vector<int> Quiz::shuffle(OrderStrategy &orderer) const
 // -------------------- User -------------------- //
 
 User::User(const std::string &username, const std::string &passwordHash)
-    : m_username(username), m_passwordHash(passwordHash)
-{
-}
+    : m_username(username)
+    , m_passwordHash(passwordHash)
+{}
 
 const std::string &User::getName() const
 {
@@ -195,9 +241,9 @@ void User::addQuiz(const Quiz &q)
 
 bool User::deleteQuiz(int id)
 {
-    auto it = std::remove_if(m_quizzes.begin(),
-                             m_quizzes.end(),
-                             [id](const Quiz &q) { return q.getId() == id; });
+    auto it = std::remove_if(m_quizzes.begin(), m_quizzes.end(), [id](const Quiz &q) {
+        return q.getId() == id;
+    });
     if (it == m_quizzes.end())
         return false;
     m_quizzes.erase(it, m_quizzes.end());
@@ -207,8 +253,7 @@ bool User::deleteQuiz(int id)
 
 Quiz *User::findQuizById(int id)
 {
-    for (auto &q : m_quizzes)
-    {
+    for (auto &q : m_quizzes) {
         if (q.getId() == id)
             return &q;
     }
@@ -217,18 +262,26 @@ Quiz *User::findQuizById(int id)
 
 const Quiz *User::findQuizById(int id) const
 {
-    for (const auto &q : m_quizzes)
-    {
+    for (const auto &q : m_quizzes) {
         if (q.getId() == id)
             return &q;
     }
     return nullptr;
 }
 
-std::vector<Quiz> &User::getQuizzes() { return m_quizzes; }
-const std::vector<Quiz> &User::getQuizzes() const { return m_quizzes; }
+std::vector<Quiz> &User::getQuizzes()
+{
+    return m_quizzes;
+}
+const std::vector<Quiz> &User::getQuizzes() const
+{
+    return m_quizzes;
+}
 
-std::map<int, QuizStats> &User::getStatsByQuiz() { return m_statsByQuiz; }
+std::map<int, QuizStats> &User::getStatsByQuiz()
+{
+    return m_statsByQuiz;
+}
 const std::map<int, QuizStats> &User::getStatsByQuiz() const
 {
     return m_statsByQuiz;
@@ -264,8 +317,7 @@ std::vector<int> DifficultyOrder::order(const Quiz &quiz)
 
 QuizSession::QuizSession(const Quiz &quiz)
     : m_quiz(&quiz)
-{
-}
+{}
 
 void QuizSession::start(OrderStrategy &orderer)
 {
@@ -292,8 +344,7 @@ void QuizSession::selectAnswer(int choiceIdx)
     const Question &q = m_quiz->getQuestion(qIdx);
 
     // Update score (re-score this question in case user changes answer)
-    if (m_responses[m_currentIdx] != -1)
-    {
+    if (m_responses[m_currentIdx] != -1) {
         // subtract previous contribution
         if (q.isCorrect(m_responses[m_currentIdx]))
             m_score--;
@@ -307,8 +358,7 @@ void QuizSession::selectAnswer(int choiceIdx)
 
 bool QuizSession::next()
 {
-    if (m_currentIdx + 1 < static_cast<int>(m_order.size()))
-    {
+    if (m_currentIdx + 1 < static_cast<int>(m_order.size())) {
         ++m_currentIdx;
         return true;
     }
@@ -317,8 +367,7 @@ bool QuizSession::next()
 
 bool QuizSession::prev()
 {
-    if (m_currentIdx > 0)
-    {
+    if (m_currentIdx > 0) {
         --m_currentIdx;
         return true;
     }
@@ -342,8 +391,7 @@ Attempt QuizSession::computeSummary() const
         return Attempt();
 
     std::vector<int> wrongIds;
-    for (std::size_t i = 0; i < m_order.size(); ++i)
-    {
+    for (std::size_t i = 0; i < m_order.size(); ++i) {
         int qIdx = m_order[i];
         const Question &q = m_quiz->getQuestion(qIdx);
         int response = m_responses[i];
@@ -379,12 +427,10 @@ const Quiz &QuizSession::getQuiz() const
 
 // -------------------- StorageService -------------------- //
 
-StorageService::StorageService(const std::string &rootPath,
-                               const std::string &fileFormatVersion)
-    : m_rootPath(rootPath),
-    m_fileFormatVersion(fileFormatVersion)
-{
-}
+StorageService::StorageService(const std::string &rootPath, const std::string &fileFormatVersion)
+    : m_rootPath(rootPath)
+    , m_fileFormatVersion(fileFormatVersion)
+{}
 
 const std::string &StorageService::getRootPath() const
 {
@@ -410,8 +456,7 @@ void StorageService::saveUsers(const std::vector<User> &users)
 
 std::optional<User> StorageService::loadUser(const std::string &username)
 {
-    for (const auto &u : m_cachedUsers)
-    {
+    for (const auto &u : m_cachedUsers) {
         if (u.getName() == username)
             return u;
     }
@@ -420,10 +465,8 @@ std::optional<User> StorageService::loadUser(const std::string &username)
 
 void StorageService::saveUser(const User &user)
 {
-    for (auto &u : m_cachedUsers)
-    {
-        if (u.getName() == user.getName())
-        {
+    for (auto &u : m_cachedUsers) {
+        if (u.getName() == user.getName()) {
             u = user;
             return;
         }
@@ -431,16 +474,13 @@ void StorageService::saveUser(const User &user)
     m_cachedUsers.push_back(user);
 }
 
-bool StorageService::exportQuiz(const User & /*user*/,
-                                int /*quizId*/,
-                                const std::string & /*path*/)
+bool StorageService::exportQuiz(const User & /*user*/, int /*quizId*/, const std::string & /*path*/)
 {
     // TODO: implement real export
     return true;
 }
 
-bool StorageService::importQuiz(User & /*user*/,
-                                const std::string & /*path*/)
+bool StorageService::importQuiz(User & /*user*/, const std::string & /*path*/)
 {
     // TODO: implement real import
     return true;
@@ -450,11 +490,9 @@ bool StorageService::importQuiz(User & /*user*/,
 
 AuthService::AuthService(StorageService &storage)
     : m_storage(storage)
-{
-}
+{}
 
-User AuthService::createAccount(const std::string &username,
-                                const std::string &password)
+User AuthService::createAccount(const std::string &username, const std::string &password)
 {
     // No hashing for now; just store password directly
     User u(username, password);
@@ -464,8 +502,7 @@ User AuthService::createAccount(const std::string &username,
     return u;
 }
 
-std::optional<User> AuthService::login(const std::string &username,
-                                       const std::string &password)
+std::optional<User> AuthService::login(const std::string &username, const std::string &password)
 {
     auto optUser = m_storage.loadUser(username);
     if (!optUser)
@@ -485,8 +522,7 @@ bool AuthService::userExists(const std::string &username)
 
 LoginController::LoginController(AuthService &auth)
     : m_auth(auth)
-{
-}
+{}
 
 void LoginController::showLoginScreen()
 {
@@ -494,8 +530,7 @@ void LoginController::showLoginScreen()
     std::cout << "[LoginController] showLoginScreen()\n";
 }
 
-void LoginController::handleLogin(const std::string &username,
-                                  const std::string &password)
+void LoginController::handleLogin(const std::string &username, const std::string &password)
 {
     auto user = m_auth.login(username, password);
     if (user)
@@ -504,11 +539,9 @@ void LoginController::handleLogin(const std::string &username,
         std::cout << "Login failed for " << username << "\n";
 }
 
-void LoginController::handleCreateAccount(const std::string &username,
-                                          const std::string &password)
+void LoginController::handleCreateAccount(const std::string &username, const std::string &password)
 {
-    if (m_auth.userExists(username))
-    {
+    if (m_auth.userExists(username)) {
         std::cout << "User already exists: " << username << "\n";
         return;
     }
@@ -518,8 +551,7 @@ void LoginController::handleCreateAccount(const std::string &username,
 
 MainMenuController::MainMenuController(StorageService &storage)
     : m_storage(storage)
-{
-}
+{}
 
 void MainMenuController::showMenu(User &user)
 {
@@ -527,8 +559,7 @@ void MainMenuController::showMenu(User &user)
     std::cout << "You have " << user.getQuizzes().size() << " quizzes.\n";
 }
 
-void MainMenuController::handleCreateQuiz(User &user,
-                                          const std::string &title)
+void MainMenuController::handleCreateQuiz(User &user, const std::string &title)
 {
     int id = static_cast<int>(user.getQuizzes().size()) + 1;
     user.addQuiz(Quiz(id, title));
@@ -536,10 +567,8 @@ void MainMenuController::handleCreateQuiz(User &user,
     auto users = m_storage.loadUsers();
     // naive: overwrite same-name user
     bool updated = false;
-    for (auto &u : users)
-    {
-        if (u.getName() == user.getName())
-        {
+    for (auto &u : users) {
+        if (u.getName() == user.getName()) {
             u = user;
             updated = true;
             break;
@@ -554,16 +583,14 @@ void MainMenuController::handleEditQuiz(User &user, int quizId)
 {
     std::cout << "[MainMenu] Edit quiz " << quizId << "\n";
     // In a real Qt app you'd open your editor window here.
-    (void)user;
+    (void) user;
 }
 
-void MainMenuController::handlePlayQuiz(User &user,
-                                        int quizId,
-                                        OrderStrategy &orderer)
+void MainMenuController::handlePlayQuiz(User &user, int quizId, OrderStrategy &orderer)
 {
     std::cout << "[MainMenu] Play quiz " << quizId << "\n";
-    (void)user;
-    (void)orderer;
+    (void) user;
+    (void) orderer;
 }
 
 void EditQuizController::showEditor(Quiz &quiz)
@@ -634,7 +661,7 @@ void PlayQuizController::finishSession()
     if (!m_session)
         return;
     // Mark finished by setting end time
-    (void)m_session->elapsed(); // just compute once
+    (void) m_session->elapsed(); // just compute once
 }
 
 const std::optional<QuizSession> &PlayQuizController::getSession() const
@@ -642,12 +669,9 @@ const std::optional<QuizSession> &PlayQuizController::getSession() const
     return m_session;
 }
 
-void ResultsController::showResults(const User &user,
-                                    const Quiz &quiz,
-                                    const Attempt &attempt)
+void ResultsController::showResults(const User &user, const Quiz &quiz, const Attempt &attempt)
 {
-    std::cout << "[Results] User: " << user.getName()
-              << " Quiz: " << quiz.getTitle()
+    std::cout << "[Results] User: " << user.getName() << " Quiz: " << quiz.getTitle()
               << " Score: " << attempt.getScore() << "\n";
 }
 

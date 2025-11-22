@@ -1,16 +1,20 @@
 #include "mainwindow.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QMessageBox>
 #include <QDebug>
+#include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QVBoxLayout>
+
+// NEW
+#include <fstream>
+#include <sstream>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-    m_storage("./data", "1.0"),
-    m_auth(m_storage),
-    m_mainMenuController(m_storage)
+    : QMainWindow(parent)
+    , m_storage("./data", "1.0")
+    , m_auth(m_storage)
+    , m_mainMenuController(m_storage)
 {
     stacked = new QStackedWidget(this);
     setCentralWidget(stacked);
@@ -39,45 +43,73 @@ MainWindow::MainWindow(QWidget *parent)
     quizListPage = new QuizListWindow();
 
     // add to stacked widget
-    stacked->addWidget(loginPage);      // index 0
-    stacked->addWidget(quizListPage);   // index 1
+    stacked->addWidget(loginPage);    // index 0
+    stacked->addWidget(quizListPage); // index 1
     stacked->setCurrentIndex(0);
 
     // connect signals
-    connect(loginBtn, &QPushButton::clicked,
-            this, &MainWindow::handleLogin);
+    connect(loginBtn, &QPushButton::clicked, this, &MainWindow::handleLogin);
 
-    connect(createBtn, &QPushButton::clicked,
-            this, &MainWindow::handleCreate);
+    connect(createBtn, &QPushButton::clicked, this, &MainWindow::handleCreate);
 
-    connect(quizListPage, &QuizListWindow::createQuizRequested,
-            this, &MainWindow::handleCreateQuiz);
+    connect(quizListPage, &QuizListWindow::createQuizRequested, this, &MainWindow::handleCreateQuiz);
 
-    connect(quizListPage, &QuizListWindow::playQuizRequested,
-            this, &MainWindow::handlePlayQuiz);
+    connect(quizListPage, &QuizListWindow::playQuizRequested, this, &MainWindow::handlePlayQuiz);
 
-    connect(quizListPage, &QuizListWindow::editQuizRequested,
-            this, &MainWindow::handleEditQuiz);
+    connect(quizListPage, &QuizListWindow::editQuizRequested, this, &MainWindow::handleEditQuiz);
 }
 
 void MainWindow::handleLogin()
 {
-    auto user = m_auth.login(
-        username->text().toStdString(),
-        password->text().toStdString());
+    const std::string u = username->text().toStdString();
+    const std::string p = password->text().toStdString();
 
-    if (!user)
+    std::ifstream file("db.csv");
+    if (!file.is_open())
+    {
+        status->setText("Login failed: db.csv not found.");
+        QMessageBox::warning(this, "Login failed",
+                             "User database file db.csv could not be opened.");
+        return;
+    }
+
+    std::string line;
+    bool first = true;
+    bool ok = false;
+
+    while (std::getline(file, line))
+    {
+        if (first)
+        {
+            first = false; // skip header row
+            continue;
+        }
+
+        std::stringstream ss(line);
+        std::string fileUser, filePass;
+        std::getline(ss, fileUser, ',');
+        std::getline(ss, filePass, ',');
+
+        if (fileUser == u && filePass == p)
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    if (!ok)
     {
         status->setText("Login failed.");
         return;
     }
 
-    m_currentUser = *user;
+    m_currentUser = User(u, p);
     quizListPage->setUser(*m_currentUser);
 
     stacked->setCurrentIndex(1);
     m_mainMenuController.showMenu(*m_currentUser);
 }
+
 
 void MainWindow::handleCreate()
 {
@@ -90,33 +122,73 @@ void MainWindow::handleCreate()
         return;
     }
 
-    if (m_auth.userExists(u))
+    bool existed = false;
     {
-        status->setText("User exists.");
+        std::ifstream check("db.csv");
+        existed = check.good();
+    }
+
+    if (existed)
+    {
+        std::ifstream file("db.csv");
+        if (file.is_open())
+        {
+            std::string line;
+            bool first = true;
+            while (std::getline(file, line))
+            {
+                if (first)
+                {
+                    first = false; // skip header
+                    continue;
+                }
+
+                std::stringstream ss(line);
+                std::string fileUser, filePass;
+                std::getline(ss, fileUser, ',');
+                std::getline(ss, filePass, ',');
+
+                if (fileUser == u)
+                {
+                    status->setText("User exists.");
+                    return;
+                }
+            }
+        }
+    }
+
+    std::ofstream out("db.csv", std::ios::app);
+    if (!out.is_open())
+    {
+        status->setText("Error creating account.");
         return;
     }
 
-    m_currentUser = m_auth.createAccount(u, p);
+    if (!existed)
+    {
+        out << "Username,Password\n";
+    }
+    out << u << "," << p << "\n";
+
+    m_currentUser = User(u, p);
     quizListPage->setUser(*m_currentUser);
 
     stacked->setCurrentIndex(1);
     m_mainMenuController.showMenu(*m_currentUser);
 }
 
+
 void MainWindow::handleCreateQuiz()
 {
-    QMessageBox::information(this, "TODO",
-                             "Create quiz editor not implemented.");
+    QMessageBox::information(this, "TODO", "Create quiz editor not implemented.");
 }
 
 void MainWindow::handlePlayQuiz(const Quiz &quiz)
 {
-    qDebug() << "Play quiz:"
-             << QString::fromStdString(quiz.getTitle());
+    qDebug() << "Play quiz:" << QString::fromStdString(quiz.getTitle());
 }
 
 void MainWindow::handleEditQuiz(const Quiz &quiz)
 {
-    qDebug() << "Edit quiz:"
-             << QString::fromStdString(quiz.getTitle());
+    qDebug() << "Edit quiz:" << QString::fromStdString(quiz.getTitle());
 }

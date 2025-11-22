@@ -1,12 +1,12 @@
 #ifndef QUIZAPP_H
 #define QUIZAPP_H
 
+#include <chrono>
+#include <map>
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-#include <map>
-#include <optional>
-#include <chrono>
-#include <memory>
 
 // Simple aliases matching the UML idea of DateTime / Duration
 using DateTime = std::chrono::system_clock::time_point;
@@ -56,14 +56,14 @@ public:
     int getCorrectIndex() const;
 
     // stats methods
-    void addStat(int choiceIdx);        // increments count for that choice
+    void addStat(int choiceIdx); // increments count for that choice
     int returnStats(int choiceIdx) const;
     bool isCorrect(int choiceIdx) const;
 
 private:
     std::string m_prompt;
     std::vector<Choice> m_choices;
-    int m_correctIdx{ -1 };
+    int m_correctIdx{-1};
     std::vector<int> m_stats; // parallel to m_choices
 };
 
@@ -83,8 +83,8 @@ public:
 
 private:
     DateTime m_timestamp{};
-    int m_score{ 0 };
-    Duration m_elapsed{ 0 };
+    int m_score{0};
+    Duration m_elapsed{0};
     std::vector<int> m_wrongQuestionIds;
 };
 
@@ -101,9 +101,9 @@ public:
     const std::vector<Attempt> &getHistory() const;
 
 private:
-    int m_attempts{ 0 };
-    int m_bestScore{ 0 };
-    Duration m_bestTime{ Duration::max() };
+    int m_attempts{0};
+    int m_bestScore{0};
+    Duration m_bestTime{Duration::max()};
     std::vector<Attempt> m_history;
 };
 
@@ -129,7 +129,7 @@ public:
     std::vector<int> shuffle(OrderStrategy &orderer) const;
 
 private:
-    int m_id{ 0 };
+    int m_id{0};
     std::string m_title;
     std::vector<Question> m_questions;
 };
@@ -204,17 +204,17 @@ public:
 
     Attempt computeSummary() const;
 
-    int currentQuestionIndex() const;      // index in m_order
-    int currentQuestionId() const;         // actual question index in quiz
+    int currentQuestionIndex() const; // index in m_order
+    int currentQuestionId() const;    // actual question index in quiz
     int getScore() const;
 
     const Quiz &getQuiz() const;
 
 private:
-    const Quiz *m_quiz{ nullptr };
-    std::vector<int> m_order;     // mapping session index -> quiz question index
-    int m_currentIdx{ 0 };
-    int m_score{ 0 };
+    const Quiz *m_quiz{nullptr};
+    std::vector<int> m_order; // mapping session index -> quiz question index
+    int m_currentIdx{0};
+    int m_score{0};
 
     DateTime m_startTime{};
     std::optional<DateTime> m_endTime;
@@ -226,8 +226,7 @@ private:
 class StorageService
 {
 public:
-    StorageService(const std::string &rootPath,
-                   const std::string &fileFormatVersion);
+    StorageService(const std::string &rootPath, const std::string &fileFormatVersion);
 
     const std::string &getRootPath() const;
     const std::string &getFileFormatVersion() const;
@@ -253,10 +252,8 @@ class AuthService
 public:
     explicit AuthService(StorageService &storage);
 
-    User createAccount(const std::string &username,
-                       const std::string &password);
-    std::optional<User> login(const std::string &username,
-                              const std::string &password);
+    User createAccount(const std::string &username, const std::string &password);
+    std::optional<User> login(const std::string &username, const std::string &password);
     bool userExists(const std::string &username);
 
 private:
@@ -271,10 +268,8 @@ public:
     explicit LoginController(AuthService &auth);
 
     void showLoginScreen();
-    void handleLogin(const std::string &username,
-                     const std::string &password);
-    void handleCreateAccount(const std::string &username,
-                             const std::string &password);
+    void handleLogin(const std::string &username, const std::string &password);
+    void handleCreateAccount(const std::string &username, const std::string &password);
 
 private:
     AuthService &m_auth;
@@ -325,9 +320,7 @@ private:
 class ResultsController
 {
 public:
-    void showResults(const User &user,
-                     const Quiz &quiz,
-                     const Attempt &attempt);
+    void showResults(const User &user, const Quiz &quiz, const Attempt &attempt);
     void record(const Attempt &attempt, QuizStats &stats);
     void redo(const Quiz &quiz, OrderStrategy &orderer);
     void returnToMenu(const User &user);
