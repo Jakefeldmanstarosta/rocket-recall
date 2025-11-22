@@ -1,0 +1,14 @@
+build/
+*.user
+*.user.*
+*.pro.user
+*.qtc_clangd/
+CMakeFiles/
+CMakeCache.txt
+*.exe
+*.ilk
+*.pdb
+*.obj
+*.log
+*.autogen/
+/.qtcreator/
