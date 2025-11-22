@@ -1,0 +1,20 @@
+# ninja log v6
+27	734	7855387491199514	RocketRecallProject_autogen/timestamp	712347c79455ed40
+27	734	7855387491199514	RocketRecallProject_autogen/mocs_compilation.cpp	712347c79455ed40
+27	734	7855387491199514	C:/Users/jakef/rocket-recall/RocketRecallProject/build/Desktop_Qt_6_9_3_MSVC2022_64bit-Debug/RocketRecallProject_autogen/timestamp	712347c79455ed40
+27	734	7855387491199514	C:/Users/jakef/rocket-recall/RocketRecallProject/build/Desktop_Qt_6_9_3_MSVC2022_64bit-Debug/RocketRecallProject_autogen/mocs_compilation.cpp	712347c79455ed40
+779	2304	7855387492800167	CMakeFiles/RocketRecallProject.dir/QuizApp.cpp.obj	45f5dfd904ef61aa
+756	3749	7855387492580176	CMakeFiles/RocketRecallProject.dir/main.cpp.obj	b0c48930be7806a9
+784	3870	7855387492860143	CMakeFiles/RocketRecallProject.dir/quizlistwindow.cpp.obj	8bb34ce23de3184b
+764	4122	7855387492650122	CMakeFiles/RocketRecallProject.dir/mainwindow.cpp.obj	99f10cabbaf1e112
+749	4157	7855387492497848	CMakeFiles/RocketRecallProject.dir/RocketRecallProject_autogen/mocs_compilation.cpp.obj	58f7a28887398def
+4157	4729	7855387526584608	RocketRecallProject.exe	a00502415941fa78
+67	833	7855394586533125	RocketRecallProject_autogen/timestamp	712347c79455ed40
+67	833	7855394586533125	RocketRecallProject_autogen/mocs_compilation.cpp	712347c79455ed40
+67	833	7855394586533125	C:/Users/jakef/rocket-recall/RocketRecallProject/build/Desktop_Qt_6_9_3_MSVC2022_64bit-Debug/RocketRecallProject_autogen/timestamp	712347c79455ed40
+67	833	7855394586533125	C:/Users/jakef/rocket-recall/RocketRecallProject/build/Desktop_Qt_6_9_3_MSVC2022_64bit-Debug/RocketRecallProject_autogen/mocs_compilation.cpp	712347c79455ed40
+841	4023	7855394587603543	CMakeFiles/RocketRecallProject.dir/main.cpp.obj	b0c48930be7806a9
+852	4076	7855394587723542	CMakeFiles/RocketRecallProject.dir/quizlistwindow.cpp.obj	8bb34ce23de3184b
+845	4149	7855394587653544	CMakeFiles/RocketRecallProject.dir/mainwindow.cpp.obj	99f10cabbaf1e112
+835	4279	7855394587553551	CMakeFiles/RocketRecallProject.dir/RocketRecallProject_autogen/mocs_compilation.cpp.obj	58f7a28887398def
+4280	4703	7855394622003879	RocketRecallProject.exe	a00502415941fa78

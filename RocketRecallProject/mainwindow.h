@@ -1,72 +1,41 @@
-//#ifndef MAINWINDOW_H
-//#define MAINWINDOW_H
-
-//#include <QMainWindow>
-
-//QT_BEGIN_NAMESPACE
-//namespace Ui { class MainWindow; }
-//QT_END_NAMESPACE
-
-//class MainWindow : public QMainWindow
-//{
-//    Q_OBJECT
-
-//public:
-//    MainWindow(QWidget *parent = nullptr);
-//    ~MainWindow();
-
-//private:
-//    Ui::MainWindow *ui;
-//};
-//#endif // MAINWINDOW_H
-
-
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
-#include <QString>
+#include <QStackedWidget>
+#include <QLineEdit>
+#include <QLabel>
 #include <optional>
 
-#include "QuizApp.h"   // your backend classes
+#include "QuizApp.h"
 #include "quizlistwindow.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-//class QuizListWindow;
-
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
 
 private slots:
     void handleLogin();
-    void handleCreateAccount();
+    void handleCreate();
     void handleCreateQuiz();
     void handlePlayQuiz(const Quiz &quiz);
     void handleEditQuiz(const Quiz &quiz);
 
-
 private:
-    Ui::MainWindow *ui;
+    QStackedWidget *stacked;
 
+    QWidget *loginPage;
+    QuizListWindow *quizListPage;
 
-    // Backend objects
-    StorageService      m_storage;
-    AuthService         m_auth;
-    MainMenuController  m_mainMenuController;
-    PlayQuizController  m_playQuizController;
-    EditQuizController  m_editQuizController;
+    QLineEdit *username;
+    QLineEdit *password;
+    QLabel *status;
 
-    QuizListWindow *m_quizListWindow = nullptr;
+    StorageService m_storage;
+    AuthService m_auth;
+    MainMenuController m_mainMenuController;
+    PlayQuizController m_playQuizController;
+    EditQuizController m_editQuizController;
 
     std::optional<User> m_currentUser;
 };
-
-#endif // MAINWINDOW_H
