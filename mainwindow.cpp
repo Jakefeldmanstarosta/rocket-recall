@@ -58,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(quizListPage, &QuizListWindow::editQuizRequested, this, &MainWindow::handleEditQuiz);
 }
-
 void MainWindow::handleLogin()
 {
     const std::string u = username->text().toStdString();
@@ -103,7 +102,32 @@ void MainWindow::handleLogin()
         return;
     }
 
+    // Build user from CSV login
     m_currentUser = User(u, p);
+
+    // --- TEMP TEST QUIZ ---
+    if (m_currentUser->getQuizzes().empty()) {
+        Quiz q(1, "Test Quiz");
+        Question a("What is 2 + 2?");
+        a.addChoice(Choice("A", "3"));
+        a.addChoice(Choice("B", "4"));
+        a.addChoice(Choice("C", "5"));
+        a.setCorrectIndex(1);
+
+        Question b("Capital of France?");
+        b.addChoice(Choice("A", "Berlin"));
+        b.addChoice(Choice("B", "Rome"));
+        b.addChoice(Choice("C", "Paris"));
+        b.setCorrectIndex(2);
+
+        q.addQuestion(a);
+        q.addQuestion(b);
+
+        m_currentUser->addQuiz(q);
+
+        m_storage.saveUser(*m_currentUser);
+    }
+
     quizListPage->setUser(*m_currentUser);
 
     stacked->setCurrentIndex(1);
@@ -170,7 +194,32 @@ void MainWindow::handleCreate()
     }
     out << u << "," << p << "\n";
 
+    // Newly created user
     m_currentUser = User(u, p);
+
+    // --- TEMP TEST QUIZ ---
+    if (m_currentUser->getQuizzes().empty()) {
+        Quiz q(1, "Test Quiz");
+        Question a("What is 2 + 2?");
+        a.addChoice(Choice("A", "3"));
+        a.addChoice(Choice("B", "4"));
+        a.addChoice(Choice("C", "5"));
+        a.setCorrectIndex(1);
+
+        Question b("Capital of France?");
+        b.addChoice(Choice("A", "Berlin"));
+        b.addChoice(Choice("B", "Rome"));
+        b.addChoice(Choice("C", "Paris"));
+        b.setCorrectIndex(2);
+
+        q.addQuestion(a);
+        q.addQuestion(b);
+
+        m_currentUser->addQuiz(q);
+
+        m_storage.saveUser(*m_currentUser);
+    }
+
     quizListPage->setUser(*m_currentUser);
 
     stacked->setCurrentIndex(1);
@@ -185,7 +234,12 @@ void MainWindow::handleCreateQuiz()
 
 void MainWindow::handlePlayQuiz(const Quiz &quiz)
 {
-    qDebug() << "Play quiz:" << QString::fromStdString(quiz.getTitle());
+    if (playPage)
+        stacked->removeWidget(playPage);
+
+    playPage = new PlayQuizWindow(quiz, this);
+    stacked->addWidget(playPage);
+    stacked->setCurrentWidget(playPage);
 }
 
 void MainWindow::handleEditQuiz(const Quiz &quiz)

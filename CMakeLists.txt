@@ -27,6 +27,8 @@ set(PROJECT_SOURCES
 qt_add_executable(RocketRecallProject
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
+    PlayQuizWindow.h
+    PlayQuizWindow.cpp
 )
 
 target_link_libraries(RocketRecallProject PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)

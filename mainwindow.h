@@ -8,6 +8,8 @@
 
 #include "QuizApp.h"
 #include "quizlistwindow.h"
+#include "PlayQuizWindow.h"
+
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +33,8 @@ private:
     QLineEdit *username;
     QLineEdit *password;
     QLabel *status;
+
+    PlayQuizWindow *playPage = nullptr;
 
     StorageService m_storage;
     AuthService m_auth;

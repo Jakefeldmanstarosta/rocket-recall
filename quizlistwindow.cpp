@@ -39,7 +39,7 @@ QuizListWindow::QuizListWindow(QWidget *parent)
 }
 
 // Called by MainWindow after login / create account
-void QuizListWindow::setUser(const User &user)
+void QuizListWindow::setUser(User &user)
 {
     m_user = &user;
     populateList();

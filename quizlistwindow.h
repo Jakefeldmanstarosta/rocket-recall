@@ -11,7 +11,7 @@ public:
     QuizListWindow(QWidget *parent = nullptr);
 
     //so that a user can be assigned for a quizlist
-    void setUser(const User &user);
+    void setUser(User &user);
 signals:
     void createQuizRequested();
     void playQuizRequested(const Quiz &quiz);
@@ -19,6 +19,6 @@ signals:
 
 private:
     QListWidget *listWidget;
-    const User *m_user = nullptr; // we don't own the user
+    User *m_user = nullptr;
     void populateList();
 };
