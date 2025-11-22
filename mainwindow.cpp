@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "quizeditwindow.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -11,10 +12,12 @@
 #include <sstream>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , m_storage("./data", "1.0")
-    , m_auth(m_storage)
-    , m_mainMenuController(m_storage)
+
+    : QMainWindow(parent),
+    m_storage("./data", "1.0"),
+    m_auth(m_storage),
+    m_mainMenuController(m_storage),
+    m_createQuizController(m_storage)
 {
     stacked = new QStackedWidget(this);
     setCentralWidget(stacked);
@@ -229,8 +232,32 @@ void MainWindow::handleCreate()
 
 void MainWindow::handleCreateQuiz()
 {
-    QMessageBox::information(this, "TODO", "Create quiz editor not implemented.");
+    if (!m_currentUser) return;
+
+    // 1) Start a brand-new quiz for this user
+    m_createQuizController.startNewQuiz(*m_currentUser, "Untitled quiz");
+
+    Quiz *newQuiz = m_createQuizController.getQuiz();
+    if (!newQuiz) return;
+
+    // 2) Open the edit window
+    QuizEditWindow dlg(this);
+    dlg.setQuiz(*m_currentUser, *newQuiz, m_createQuizController);
+
+    // 3) After Done/Close
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        // ✅ Refresh the quiz list UI
+        quizListPage->setUser(*m_currentUser);
+        quizListPage->populateList();
+
+        // ✅ Return to quiz list page (main menu)
+        stacked->setCurrentIndex(1);
+    }
 }
+
+
+
 
 void MainWindow::handlePlayQuiz(const Quiz &quiz)
 {
@@ -244,5 +271,15 @@ void MainWindow::handlePlayQuiz(const Quiz &quiz)
 
 void MainWindow::handleEditQuiz(const Quiz &quiz)
 {
-    qDebug() << "Edit quiz:" << QString::fromStdString(quiz.getTitle());
+    if (!m_currentUser) return;
+
+    // Find the modifiable quiz object in the current user
+    Quiz *editable = m_currentUser->findQuizById(quiz.getId());
+    if (!editable) return;
+
+    auto *dlg = new QuizEditWindow(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setQuiz(*m_currentUser, *editable, m_editQuizController);
+
+    dlg->show();
 }

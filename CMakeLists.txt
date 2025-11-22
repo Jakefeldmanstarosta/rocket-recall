@@ -22,7 +22,12 @@ set(PROJECT_SOURCES
     quizlistwindow.h
     quizlistwindow.ui
     quizrowwidget.h
+
+    quizeditwindow.cpp
+    quizeditwindow.h
+    quizeditwindow.ui
 )
+
 
 qt_add_executable(RocketRecallProject
     MANUAL_FINALIZATION

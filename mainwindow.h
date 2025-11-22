@@ -41,6 +41,8 @@ private:
     MainMenuController m_mainMenuController;
     PlayQuizController m_playQuizController;
     EditQuizController m_editQuizController;
+    CreateQuizController m_createQuizController;
+
 
     std::optional<User> m_currentUser;
 };

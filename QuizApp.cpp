@@ -669,6 +669,94 @@ const std::optional<QuizSession> &PlayQuizController::getSession() const
     return m_session;
 }
 
+CreateQuizController::CreateQuizController(StorageService &storage)
+    : m_storage(storage)
+{
+}
+
+void CreateQuizController::startNewQuiz(User &user, const std::string &title)
+{
+    m_user = &user;
+
+    // Simple ID scheme: next integer after current quiz count
+    int id = static_cast<int>(user.getQuizzes().size()) + 1;
+    m_workingQuiz = Quiz(id, title);
+
+    std::cout << "[CreateQuiz] Started new quiz '"
+              << title << "' with id " << id << "\n";
+}
+
+void CreateQuizController::addQuestion(const Question &q)
+{
+    if (!m_workingQuiz)
+        return;
+
+    m_workingQuiz->addQuestion(q);
+}
+
+void CreateQuizController::removeQuestion(int idx)
+{
+    if (!m_workingQuiz)
+        return;
+
+    m_workingQuiz->removeQuestion(idx);
+}
+
+void CreateQuizController::updateQuestion(int idx, const Question &q)
+{
+    if (!m_workingQuiz)
+        return;
+
+    m_workingQuiz->updateQuestion(idx, q);
+}
+
+void CreateQuizController::saveAndFinish()
+{
+    if (!m_user || !m_workingQuiz)
+        return;
+
+    // Add the new quiz to the logged-in user
+    m_user->addQuiz(*m_workingQuiz);
+
+    // Persist user back through StorageService (same pattern as MainMenuController)
+    auto users = m_storage.loadUsers();
+    bool updated = false;
+    for (auto &u : users)
+    {
+        if (u.getName() == m_user->getName())
+        {
+            u = *m_user;
+            updated = true;
+            break;
+        }
+    }
+    if (!updated)
+        users.push_back(*m_user);
+
+    m_storage.saveUsers(users);
+
+    std::cout << "[CreateQuiz] Saved quiz '"
+              << m_workingQuiz->getTitle()
+              << "' for user " << m_user->getName() << "\n";
+
+    // Clear working state
+    m_workingQuiz.reset();
+    m_user = nullptr;
+}
+
+bool CreateQuizController::hasActiveQuiz() const
+{
+    return m_workingQuiz.has_value();
+}
+
+Quiz* CreateQuizController::getQuiz()
+{
+    if (!m_workingQuiz)
+        return nullptr;
+    return &(*m_workingQuiz);
+}
+
+
 void ResultsController::showResults(const User &user, const Quiz &quiz, const Attempt &attempt)
 {
     std::cout << "[Results] User: " << user.getName() << " Quiz: " << quiz.getTitle()

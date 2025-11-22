@@ -10,8 +10,12 @@ class QuizListWindow : public QWidget
 public:
     QuizListWindow(QWidget *parent = nullptr);
 
+
     //so that a user can be assigned for a quizlist
     void setUser(User &user);
+    void setUser(const User &user);
+    void populateList();
+
 signals:
     void createQuizRequested();
     void playQuizRequested(const Quiz &quiz);
@@ -20,5 +24,4 @@ signals:
 private:
     QListWidget *listWidget;
     User *m_user = nullptr;
-    void populateList();
 };
